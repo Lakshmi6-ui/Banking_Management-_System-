@@ -1,5 +1,34 @@
 import java.util.*;
 
+class InvalidEmailException extends Exception{
+  public InvalidEmailException(String message){
+    super(message);
+  }
+}
+
+class InvalidAccountException extends Exception{
+  public InvalidAccountException(String message){
+    super(message);
+  }
+}
+
+class InvalidAccountNumberException extends Exception{
+  public InvalidAccountNumberException(String message){
+    super(message);
+  }
+}
+
+class InvalidNameException extends Exception{
+  public InvalidNameException(String message){
+    super(message);
+  }
+}
+class InvalidBalanceException extends Exception{
+  public InvalidBalanceException(String message){
+    super(message);
+  }
+}
+
 interface LoanService{
   void applyLoan(double amount);
 }
@@ -10,7 +39,20 @@ abstract class BankAccount{
   protected double balance;
   private String email;
 
-  public BankAccount(int accountNumber,String holdername,double balance,String email){
+  public BankAccount(int accountNumber,String holdername,double balance,String email)throws InvalidAccountException,InvalidNameException,InvalidBalanceException,InvalidEmailException
+  if(accountNumber<=0){
+    throw new InvalidAccountNumberException("Account Number must be positive");
+  } 
+  if(holdername.isEmpty()){
+    throw new InvalidNameException("Account Holder Name cannot be empty");
+  }
+  if(balance<0){
+    throw new InvalidBalanceException("Balance cannot be negative");
+  }
+  if(!email.matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-90.-]+$")){
+    throw new InvalidEmailException("Invalid Email Format");
+  }
+  {
     this.accountNumber=accountNumber;
     this.holdername=holdername;
     this.balance=balance;
@@ -19,13 +61,21 @@ abstract class BankAccount{
   public int getAccountNumber(){
     return accountNumber;
   }
-  public void deposit(double amount){
+  public void deposit(double amount) throws InvalidAmountExcception
+  {
+    if(amount<=0){
+      throw new InvalidAmountException("Amount must be positive");
+    }
     if(amount>0){
       balance += amount;
       System.out.println("Amount Deposited:"+amount);
     }
   }
-  public void Withdraw(double amount){
+  public void Withdraw(double amount) throws InvalidAmountException
+  {
+    if(amount<=0){
+      throw new InvalidAmountException("Amount must be positive");
+    }
     if(amount<=balance){
       balance-=amount;
       System.out.println("Amount Withdrawn:"+amount);
@@ -46,7 +96,8 @@ abstract class BankAccount{
 class SavingsAccount extends BankAccount{
   private double interestRate=5.0;
 
-  public SavingsAccount(int accNo,String name,double balance,String email){
+  public SavingsAccount(int accNo,String name,double balance,String email) throws InvalidAccountNumberException,InvalidNameException,InvalidBalanceException,InvalidEmailException
+  {
     super(accNo,name,balance,email);
   }
   
@@ -59,11 +110,13 @@ class SavingsAccount extends BankAccount{
 
 class CurrentAccount extends BankAccount{
   private double overdraftLimit=5000;
-  public CurrentAccount(int accNo,String name,double balance,String email){
+  public CurrentAccount(int accNo,String name,double balance,String email)
+  {
     super(accNo,name,balance,email);
   }
   @Override
-  public void Withdraw(double amount){
+  public void Withdraw(double amount) throws
+  {
    if(amount<=balance+overdraftLimit){
     balance-=amount;
     System.out.println("Amount Withdrawn:"+amount);
@@ -78,7 +131,7 @@ class CurrentAccount extends BankAccount{
   }
 }
 
-class BankingApp{
+class BankingApp1{
   static ArrayList<BankAccount> accounts= new ArrayList();
   static Scanner sc =new Scanner(System.in);
 
